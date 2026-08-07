@@ -20,6 +20,6 @@ export function applySchema(db: Dexie) {
     meals: "id, synced, user_id, occurred_at, parse_status",
     body_weight: "id, synced, user_id, measured_at",
     daily_metrics: "id, synced, user_id, metric_date, [user_id+metric_date]",
-    test_records: "id, synced, user_id",
+    test_records: "id, synced, user_id, created_at",
   });
 }

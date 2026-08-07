@@ -16,7 +16,11 @@ export async function ensureExerciseSeed(userId: string): Promise<void> {
   if (seedInFlight) return;
   seedInFlight = true;
   try {
-    const existing = await db.exercises.where("source").equals("seed").count();
+    const existing = await db.exercises
+      .where("source")
+      .equals("seed")
+      .and((e) => e.user_id === userId)
+      .count();
     if (existing > 0) return;
 
     const now = new Date().toISOString();

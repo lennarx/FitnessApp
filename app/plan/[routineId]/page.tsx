@@ -24,7 +24,7 @@ export default function RoutineDaysPage() {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     if (!newLabel.trim()) return;
-    const nextOrder = days?.length ?? 0;
+    const nextOrder = days && days.length > 0 ? Math.max(...days.map((d) => d.day_order)) + 1 : 0;
     await createRoutineDay({
       routine_id: routineId,
       day_label: newLabel,

@@ -14,7 +14,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/90_90_Hamstring/0.jpg"
   },
   {
-    "name_es": "Máquina de crunch abdominal",
+    "name_es": "Crunch en máquina",
     "name_en": "Ab Crunch Machine",
     "muscle_group": "core",
     "equipment": "machine",
@@ -770,7 +770,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Chest_Press/0.jpg"
   },
   {
-    "name_es": "Cruce de poleas",
+    "name_es": "Aperturas en polea",
     "name_en": "Cable Crossover",
     "muscle_group": "pecho",
     "equipment": "cable",
@@ -791,7 +791,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Deadlifts/0.jpg"
   },
   {
-    "name_es": "Curl martillo en polea con cuerda",
+    "name_es": "Curl martillo en polea",
     "name_en": "Cable Hammer Curls - Rope Attachment",
     "muscle_group": "bíceps",
     "equipment": "cable",
@@ -1225,7 +1225,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_EZ_Bar_Curl/0.jpg"
   },
   {
-    "name_es": "Jalón al pecho, agarre cerrado",
+    "name_es": "Jalón narrow MAG grip",
     "name_en": "Close-Grip Front Lat Pulldown",
     "muscle_group": "espalda",
     "equipment": "cable",
@@ -1372,7 +1372,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Close-Grip_Bench_To_Skull_Crusher/0.jpg"
   },
   {
-    "name_es": "Crunch declinado",
+    "name_es": "Crunch declinado con lastre",
     "name_en": "Decline Crunch",
     "muscle_group": "core",
     "equipment": "body only",
@@ -1869,7 +1869,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Face_Pull/0.jpg"
   },
   {
-    "name_es": "Caminata del granjero",
+    "name_es": "Briefcase carry",
     "name_en": "Farmer's Walk",
     "muscle_group": "antebrazos",
     "equipment": "other",
@@ -2149,7 +2149,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Groiners/0.jpg"
   },
   {
-    "name_es": "Sentadilla hack",
+    "name_es": "Hack squat",
     "name_en": "Hack Squat",
     "muscle_group": "cuádriceps",
     "equipment": "machine",
@@ -2226,7 +2226,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Bar_Good_Morning/0.jpg"
   },
   {
-    "name_es": "Elevación de piernas colgado",
+    "name_es": "Elevación de piernas en silla romana",
     "name_en": "Hanging Leg Raise",
     "muscle_group": "core",
     "equipment": "body only",
@@ -2877,7 +2877,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Lift/0.jpg"
   },
   {
-    "name_es": "Prensa de piernas",
+    "name_es": "Prensa inclinada 45°",
     "name_en": "Leg Press",
     "muscle_group": "cuádriceps",
     "equipment": "machine",
@@ -4221,7 +4221,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rocky_Pull-Ups_Pulldowns/0.jpg"
   },
   {
-    "name_es": "Peso muerto rumano",
+    "name_es": "Peso muerto rumano con mancuernas",
     "name_en": "Romanian Deadlift",
     "muscle_group": "isquios",
     "equipment": "barbell",
@@ -4375,7 +4375,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Biceps/0.jpg"
   },
   {
-    "name_es": "Remo sentado en polea",
+    "name_es": "Remo en cable MAG grip",
     "name_en": "Seated Cable Rows",
     "muscle_group": "espalda",
     "equipment": "cable",
@@ -4648,7 +4648,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Jackknife/0.jpg"
   },
   {
-    "name_es": "Elevación lateral",
+    "name_es": "Vuelos laterales",
     "name_en": "Side Lateral Raise",
     "muscle_group": "hombros",
     "equipment": "dumbbell",
@@ -5369,7 +5369,7 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Lateral_Stretch/0.jpg"
   },
   {
-    "name_es": "Curl femoral parado",
+    "name_es": "Curl femoral parado unilateral",
     "name_en": "Standing Leg Curl",
     "muscle_group": "isquios",
     "equipment": "machine",
@@ -6111,20 +6111,6 @@
     "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Zottman_Preacher_Curl/0.jpg"
   },
   {
-    "name_es": "Dominadas lastradas",
-    "name_en": "Weighted Pull Ups",
-    "muscle_group": "espalda",
-    "equipment": "other",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Weighted_Pull_Ups/0.jpg"
-  },
-  {
-    "name_es": "Crunch declinado con lastre",
-    "name_en": "Weighted Decline Crunch",
-    "muscle_group": "core",
-    "equipment": "body only",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Crunch/0.jpg"
-  },
-  {
     "name_es": "Press inclinado Hammer",
     "name_en": "Hammer Strength Incline Press",
     "muscle_group": "pecho",
@@ -6132,136 +6118,10 @@
     "image_url": null
   },
   {
-    "name_es": "Jalón narrow MAG grip",
-    "name_en": "Narrow Grip Lat Pulldown (MAG grip)",
-    "muscle_group": "espalda",
-    "equipment": "cable",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Close-Grip_Front_Lat_Pulldown/0.jpg"
-  },
-  {
-    "name_es": "Aperturas en polea",
-    "name_en": "Cable Flyes",
-    "muscle_group": "pecho",
-    "equipment": "cable",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg"
-  },
-  {
-    "name_es": "Vuelos laterales",
-    "name_en": "Side Lateral Raise",
-    "muscle_group": "hombros",
-    "equipment": "dumbbell",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Lateral_Raise/0.jpg"
-  },
-  {
-    "name_es": "Prensa inclinada 45°",
-    "name_en": "45-Degree Leg Press",
-    "muscle_group": "cuádriceps",
-    "equipment": "machine",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg"
-  },
-  {
-    "name_es": "Peso muerto rumano con mancuernas",
-    "name_en": "Dumbbell Romanian Deadlift",
-    "muscle_group": "isquios",
-    "equipment": "dumbbell",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Romanian_Deadlift/0.jpg"
-  },
-  {
-    "name_es": "Curl femoral sentado",
-    "name_en": "Seated Leg Curl",
-    "muscle_group": "isquios",
-    "equipment": "machine",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg"
-  },
-  {
-    "name_es": "Curl femoral parado unilateral",
-    "name_en": "Standing Single-Leg Curl",
-    "muscle_group": "isquios",
-    "equipment": "machine",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Leg_Curl/0.jpg"
-  },
-  {
-    "name_es": "Curl invertido en polea",
-    "name_en": "Reverse Cable Curl",
-    "muscle_group": "antebrazos",
-    "equipment": "cable",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Cable_Curl/0.jpg"
-  },
-  {
-    "name_es": "Briefcase carry",
-    "name_en": "Briefcase Carry",
-    "muscle_group": "core",
-    "equipment": "other",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Farmers_Walk/0.jpg"
-  },
-  {
-    "name_es": "Crunch en máquina",
-    "name_en": "Ab Crunch Machine",
-    "muscle_group": "core",
-    "equipment": "machine",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/0.jpg"
-  },
-  {
-    "name_es": "Press inclinado con mancuernas",
-    "name_en": "Incline Dumbbell Press",
-    "muscle_group": "pecho",
-    "equipment": "dumbbell",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Press/0.jpg"
-  },
-  {
-    "name_es": "Remo en cable MAG grip",
-    "name_en": "Seated Cable Row (MAG grip)",
-    "muscle_group": "espalda",
-    "equipment": "cable",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg"
-  },
-  {
-    "name_es": "Straight-arm pulldown",
-    "name_en": "Straight-Arm Pulldown",
-    "muscle_group": "espalda",
-    "equipment": "cable",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Straight-Arm_Pulldown/0.jpg"
-  },
-  {
-    "name_es": "Curl martillo en polea",
-    "name_en": "Cable Hammer Curl (Rope Attachment)",
-    "muscle_group": "bíceps",
-    "equipment": "cable",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Hammer_Curls_-_Rope_Attachment/0.jpg"
-  },
-  {
-    "name_es": "Extensión de tríceps en polea",
-    "name_en": "Triceps Pushdown",
-    "muscle_group": "tríceps",
-    "equipment": "cable",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Triceps_Pushdown/0.jpg"
-  },
-  {
     "name_es": "Sentadilla pendular",
     "name_en": "Pendulum Squat",
     "muscle_group": "cuádriceps",
     "equipment": "machine",
     "image_url": null
-  },
-  {
-    "name_es": "Hack squat",
-    "name_en": "Hack Squat",
-    "muscle_group": "cuádriceps",
-    "equipment": "machine",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hack_Squat/0.jpg"
-  },
-  {
-    "name_es": "Elevación de piernas en silla romana",
-    "name_en": "Roman Chair Leg Raise",
-    "muscle_group": "core",
-    "equipment": "body only",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hanging_Leg_Raise/0.jpg"
-  },
-  {
-    "name_es": "Extensión de cuádriceps",
-    "name_en": "Leg Extensions",
-    "muscle_group": "cuádriceps",
-    "equipment": "machine",
-    "image_url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg"
   }
 ]

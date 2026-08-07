@@ -10,7 +10,12 @@ export function Modal({
   children: React.ReactNode;
 }) {
   return (
-    <div className="fixed inset-0 z-20 flex flex-col bg-neutral-950">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      className="fixed inset-0 z-20 flex flex-col bg-neutral-950"
+    >
       <div className="flex items-center justify-between border-b border-neutral-800 p-4">
         <h2 className="text-lg font-semibold">{title}</h2>
         <button

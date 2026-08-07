@@ -31,7 +31,10 @@ export default function RoutineDayPage() {
   }, [dayId]);
 
   async function handleSelectExercise(exerciseId: string) {
-    const nextOrder = dayExercises?.length ?? 0;
+    const nextOrder =
+      dayExercises && dayExercises.length > 0
+        ? Math.max(...dayExercises.map(({ dayExercise }) => dayExercise.exercise_order)) + 1
+        : 0;
     await createRoutineDayExercise({
       routine_day_id: dayId,
       exercise_id: exerciseId,

@@ -65,6 +65,21 @@ interface SeedExercise {
   image_url: string | null;
 }
 
+/**
+ * A curated entry either overrides the name_es of a matching dataset
+ * exercise (dataset_id set — the plan's exact wording wins, but it stays
+ * the same catalog row so it doesn't show up twice) or, when there's no
+ * dataset equivalent (dataset_id: null), becomes its own new row.
+ */
+interface CuratedExercise {
+  name_es: string;
+  muscle_group: string;
+  dataset_id: string | null;
+  name_en?: string | null;
+  equipment?: string | null;
+  image_url?: string | null;
+}
+
 function muscleGroupFor(primaryMuscles: string[] | undefined): string {
   const primary = primaryMuscles?.[0];
   if (!primary) return "otro";
@@ -192,11 +207,40 @@ async function main() {
     equipment: e.equipment ?? null,
     image_url: imageUrlFor(e.images),
   }));
+  const datasetIndexById = new Map(raw.map((e, i) => [e.id, i]));
 
   const curatedRaw = await readFile(CURATED_PATH, "utf-8");
-  const curated = JSON.parse(curatedRaw) as SeedExercise[];
+  const curated = JSON.parse(curatedRaw) as CuratedExercise[];
 
-  const final = [...datasetSeed, ...curated];
+  const newEntries: SeedExercise[] = [];
+  for (const c of curated) {
+    if (c.dataset_id) {
+      const index = datasetIndexById.get(c.dataset_id);
+      if (index === undefined) {
+        console.warn(`Curated dataset_id "${c.dataset_id}" not found, adding "${c.name_es}" as a new entry instead.`);
+        newEntries.push({
+          name_es: c.name_es,
+          name_en: c.name_en ?? null,
+          muscle_group: c.muscle_group,
+          equipment: c.equipment ?? null,
+          image_url: c.image_url ?? null,
+        });
+        continue;
+      }
+      // Same catalog row, plan's exact wording wins over the auto-translated name.
+      datasetSeed[index].name_es = c.name_es;
+    } else {
+      newEntries.push({
+        name_es: c.name_es,
+        name_en: c.name_en ?? null,
+        muscle_group: c.muscle_group,
+        equipment: c.equipment ?? null,
+        image_url: c.image_url ?? null,
+      });
+    }
+  }
+
+  const final = [...datasetSeed, ...newEntries];
   await writeFile(OUTPUT_PATH, JSON.stringify(final, null, 2), "utf-8");
   console.log(`Wrote ${final.length} exercises to ${path.relative(REPO_ROOT, OUTPUT_PATH)}`);
 }

@@ -152,7 +152,7 @@ export async function createRoutineDayExercise(input: {
     target_sets: input.target_sets ?? DEFAULT_TARGET_SETS,
     target_reps_min: input.target_reps_min ?? DEFAULT_TARGET_REPS_MIN,
     target_reps_max: input.target_reps_max ?? DEFAULT_TARGET_REPS_MAX,
-    target_rir: input.target_rir ?? DEFAULT_TARGET_RIR,
+    target_rir: input.target_rir === undefined ? DEFAULT_TARGET_RIR : input.target_rir,
     rest_seconds: input.rest_seconds ?? null,
     progression_notes: input.progression_notes ?? null,
     deleted_at: null,

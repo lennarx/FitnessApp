@@ -7,6 +7,22 @@
 
 export type Synced = 0 | 1;
 
+/** Fixed muscle_group vocabulary used by the exercise catalog (seed + custom). */
+export const MUSCLE_GROUPS = [
+  "pecho",
+  "espalda",
+  "hombros",
+  "bíceps",
+  "tríceps",
+  "cuádriceps",
+  "isquios",
+  "glúteos",
+  "gemelos",
+  "core",
+  "antebrazos",
+  "otro",
+] as const;
+
 export interface BaseEntity {
   id: string;
   user_id: string;
@@ -29,6 +45,10 @@ export interface Exercise extends BaseEntity {
 export interface Routine extends BaseEntity {
   name: string;
   is_active: boolean;
+  /** Soft delete: the push-only sync engine has no delete channel, so
+   * "deleting" is just another field update that flows through the same
+   * upsert pipeline. Null means not deleted. */
+  deleted_at: string | null;
 }
 
 export interface RoutineDay extends BaseEntity {
@@ -36,6 +56,7 @@ export interface RoutineDay extends BaseEntity {
   day_label: string;
   day_order: number;
   notes: string | null;
+  deleted_at: string | null;
 }
 
 export interface RoutineDayExercise extends BaseEntity {
@@ -48,6 +69,7 @@ export interface RoutineDayExercise extends BaseEntity {
   target_rir: number | null;
   rest_seconds: number | null;
   progression_notes: string | null;
+  deleted_at: string | null;
 }
 
 export interface TrainingSession extends BaseEntity {
@@ -104,11 +126,6 @@ export interface DailyMetrics extends BaseEntity {
   steps: number | null;
 }
 
-/** Phase 1 scaffolding only — remove once Phase 2 feature screens land. */
-export interface TestRecord extends BaseEntity {
-  note: string;
-}
-
 export type LocalExercise = LocalRecord<Exercise>;
 export type LocalRoutine = LocalRecord<Routine>;
 export type LocalRoutineDay = LocalRecord<RoutineDay>;
@@ -119,4 +136,3 @@ export type LocalCardioSession = LocalRecord<CardioSession>;
 export type LocalMeal = LocalRecord<Meal>;
 export type LocalBodyWeight = LocalRecord<BodyWeight>;
 export type LocalDailyMetrics = LocalRecord<DailyMetrics>;
-export type LocalTestRecord = LocalRecord<TestRecord>;

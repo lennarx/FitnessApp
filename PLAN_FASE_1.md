@@ -35,7 +35,7 @@ FitnessApp/
 │   ├── auth/session.ts          # getLocalUserId() — offline-safe
 │   └── utils/ids.ts             # newId() = crypto.randomUUID()
 ├── types/entities.ts            # única fuente de verdad de tipos (Dexie + Supabase)
-├── middleware.ts
+├── proxy.ts                     # middleware renombrado a "proxy" en Next 16
 ├── supabase/
 │   ├── README.md                # comandos para aplicar migrations
 │   └── migrations/0001_exercises.sql … 0011_test_records.sql
@@ -97,9 +97,9 @@ CREATE POLICY "<tabla>_owner_access" ON <tabla>
 - **Login** (`app/login/page.tsx`): input de email, `supabase.auth.signInWithOtp({ email, options: { emailRedirectTo } })`.
 - **Callback** (`app/auth/callback/route.ts`): canjea `code` por sesión server-side, setea cookies, redirige a `/`.
 - **Guard doble, a propósito**:
-  - `middleware.ts` (server) refresca cookie de sesión — solo corre si hay request de red real a Vercel.
+  - `proxy.ts` (server; Next 16 renombró la convención de `middleware.ts` a `proxy.ts`) refresca cookie de sesión — solo corre si hay request de red real a Vercel.
   - `components/auth/AuthGuard.tsx` (cliente) usa `supabase.auth.getSession()` — lee sesión persistida localmente **sin red**. Nunca `getUser()`, que valida el JWT contra el servidor y rompería el offline.
-  - Motivo: con el shell precacheado por Serwist, un reload 100% offline nunca llega a Vercel — el SW sirve el HTML/JS cacheado y el middleware no corre. `AuthGuard` es quien decide, desde la sesión local, si renderiza la app o rebota a `/login`. Esto es lo que hace posible el criterio de aceptación "en modo avión la app abre".
+  - Motivo: con el shell precacheado por Serwist, un reload 100% offline nunca llega a Vercel — el SW sirve el HTML/JS cacheado y `proxy.ts` no corre. `AuthGuard` es quien decide, desde la sesión local, si renderiza la app o rebota a `/login`. Esto es lo que hace posible el criterio de aceptación "en modo avión la app abre".
 - **`user_id` en escrituras locales**: `lib/auth/session.ts` expone `getLocalUserId()` (mismo `getSession()` offline-safe), usado por cada write helper antes de construir la fila de Dexie. Como el login requiere red por definición, siempre hay sesión persistida antes de que el usuario pueda llegar a un formulario offline.
 
 ## Paquetes

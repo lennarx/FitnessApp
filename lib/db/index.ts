@@ -9,7 +9,6 @@ import type {
   LocalRoutine,
   LocalRoutineDay,
   LocalRoutineDayExercise,
-  LocalTestRecord,
   LocalTrainingSession,
 } from "@/types/entities";
 import { applySchema } from "./schema";
@@ -25,7 +24,6 @@ class FitnessDB extends Dexie {
   meals!: Table<LocalMeal, string>;
   body_weight!: Table<LocalBodyWeight, string>;
   daily_metrics!: Table<LocalDailyMetrics, string>;
-  test_records!: Table<LocalTestRecord, string>;
 
   constructor() {
     super("fitness-app");

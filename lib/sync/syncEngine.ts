@@ -6,6 +6,8 @@ let syncing = false;
 let attempts = 0;
 let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
+const PUSH_CHUNK_SIZE = 500;
+
 function computeBackoffMs(): number {
   return Math.min(2 ** attempts * 1000, 60000);
 }
@@ -15,20 +17,28 @@ async function pushTable(table: SyncedTable): Promise<void> {
   const pending = await localTable.where("synced").equals(0).toArray();
   if (pending.length === 0) return;
 
-  // Idempotent upsert on id: id is the same value as the Dexie local_id, so
-  // a retried push after a partial failure is a safe no-op, never a duplicate.
-  const payload = pending.map((row) => {
-    const copy: Record<string, unknown> = { ...row };
-    delete copy.synced;
-    return copy;
-  });
-
   const supabase = createClient();
-  const { error } = await supabase.from(table).upsert(payload, { onConflict: "id" });
-  if (error) throw error;
 
-  const ids = pending.map((row) => row.id);
-  await localTable.where("id").anyOf(ids).modify({ synced: 1 });
+  // Chunked so a large pending backlog (e.g. the ~800-row exercise seed)
+  // never hits Supabase's per-request payload limits in one shot. Each
+  // chunk is upserted (idempotent on id) and marked synced independently;
+  // if a chunk fails, the throw stops the loop and leaves the remaining
+  // chunks synced:0 for the next retry — same idempotent semantics as
+  // before, just applied per chunk instead of per table.
+  for (let i = 0; i < pending.length; i += PUSH_CHUNK_SIZE) {
+    const chunk = pending.slice(i, i + PUSH_CHUNK_SIZE);
+    const payload = chunk.map((row) => {
+      const copy: Record<string, unknown> = { ...row };
+      delete copy.synced;
+      return copy;
+    });
+
+    const { error } = await supabase.from(table).upsert(payload, { onConflict: "id" });
+    if (error) throw error;
+
+    const ids = chunk.map((row) => row.id);
+    await localTable.where("id").anyOf(ids).modify({ synced: 1 });
+  }
 }
 
 /** Pushes every pending (synced: 0) row across all tables. Idempotent, mutexed. */

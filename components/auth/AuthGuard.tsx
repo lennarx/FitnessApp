@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { BottomNav } from "@/components/nav/BottomNav";
+import { ensureExerciseSeed } from "@/lib/db/exercises";
 import { createClient } from "@/lib/supabase/client";
 import { useSyncTrigger } from "@/lib/sync/useSyncTrigger";
 
@@ -30,12 +32,14 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setStatus(session ? "authed" : "guest");
+      if (session) void ensureExerciseSeed(session.user.id);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setStatus(session ? "authed" : "guest");
+      if (session) void ensureExerciseSeed(session.user.id);
     });
 
     return () => subscription.unsubscribe();
@@ -59,5 +63,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <div className="flex min-h-dvh flex-col">
+      <div className="flex-1">{children}</div>
+      <BottomNav />
+    </div>
+  );
 }

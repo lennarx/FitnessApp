@@ -2,7 +2,7 @@
 
 PWA personal (single-user, Android-only) para reemplazar un Excel de tracking de gimnasio y alimentación. Local-first: la app lee y escribe siempre en IndexedDB (Dexie) primero, y sincroniza append-only hacia Supabase cuando hay señal.
 
-Ver `Architecture.md` (brief maestro del proyecto completo), `PLAN_FASE_1.md` (scaffold) y `PLAN_FASE_2.md` (catálogo de ejercicios + CRUD de plan) para el contexto completo.
+Ver `Architecture.md` (brief maestro del proyecto completo), `PLAN_FASE_1.md` (scaffold), `PLAN_FASE_2.md` (catálogo de ejercicios + CRUD de plan) y `PLAN_FASE_3.md` (sesión + historial) para el contexto completo.
 
 ## Stack
 
@@ -20,25 +20,31 @@ app/                  Rutas (App Router)
   page.tsx             Home: redirige a /plan
   plan/                CRUD de rutina (routines → routine_days → routine_day_exercises)
   ejercicios/          Catálogo de ejercicios (búsqueda, filtro, alta de custom)
+  sesion/              Elegir día / retomar sesión de hoy + log de sets, métricas y cardio
+  historial/           Progresión por ejercicio, agrupada por sesión
   manifest.ts          Manifest de la PWA (metadata API nativa de Next)
   sw.ts                Service worker (Serwist, solo precache)
   login/               Login por magic link
   auth/callback/       Canje de code por sesión
 
 components/
-  auth/AuthGuard.tsx    Guard de sesión offline-safe (getSession, no getUser) + seed de catálogo + BottomNav
-  sync/SyncStatusBadge  Indicador "Al día" / "N pendientes"
-  nav/BottomNav.tsx     Navegación inferior (Plan, Sesión*, Comidas*, Historial*, Ejercicios — *placeholder)
+  auth/AuthGuard.tsx    Guard de sesión offline-safe (getSession, no getUser) + seed de catálogo + SyncStatusBadge + BottomNav
+  sync/SyncStatusBadge  Indicador "Al día" / "N pendientes" (montado en AuthGuard, visible en toda la app)
+  nav/BottomNav.tsx     Navegación inferior (Plan, Sesión, Comidas*, Historial, Ejercicios — *placeholder)
   exercises/            Búsqueda/filtro, picker, thumbnail con placeholder, alta de custom
   plan/                 Fila de ejercicio del día + form de targets
+  session/              Card de ejercicio con acordeón, fila de set (editar/borrar), draft precargado, métricas diarias, notas, cardio
+  history/              Card de sesión con series y flecha de progresión
   ui/Modal.tsx          Modal genérico mobile-first
 
 lib/
-  db/                   Dexie: schema versionado + instancia tipada + write helpers (exercises, routines)
+  db/                   Dexie: schema versionado + instancia tipada + write helpers (exercises, routines, sessions, dailyMetrics) + hooks de lectura
   supabase/             Clientes Supabase (browser, server, middleware)
   sync/                 Motor de sync (registry, engine, hooks) — push chunkeado en lotes de 500
   auth/session.ts        getLocalUserId() offline-safe
   utils/ids.ts            newId() = local_id = Supabase PK
+  utils/parseLoad.ts      Normalización de carga sin LLM (con tests)
+  utils/dates.ts           todayLocalDate() / formatSessionDate() en zona local, no UTC
 
 types/entities.ts       Única fuente de tipos, compartida por Dexie y Supabase
 
@@ -48,6 +54,8 @@ data/
 
 scripts/
   build-exercise-seed.ts Regenera exercises.seed.json (ver sección "Catálogo de ejercicios")
+
+Tests: lib/**/*.test.ts (vitest, solo helpers puros — ver sección "Tests")
 
 supabase/
   migrations/            Archivos SQL, uno por tabla + limpiezas de fase, con RLS
@@ -94,6 +102,15 @@ npx tsx scripts/build-exercise-seed.ts
 
 El script descarga el dataset, traduce los nombres al español vía OpenRouter (batches de ~50, modelo configurable con `OPENROUTER_MODEL`) y mergea `exercises.curated.json` al final. Si el dataset no tiene la estructura esperada, el script aborta sin tocar el seed existente; si falla la traducción de algún batch, esos nombres quedan en inglés en vez de bloquear el resto.
 
+## Tests
+
+```bash
+npm test          # corre una vez
+npm run test:watch
+```
+
+Solo helpers puros (`lib/**/*.test.ts`) con [vitest](https://vitest.dev), `environment: "node"` — sin jsdom ni testing de UI/componentes. Hoy cubre `lib/utils/parseLoad.ts`: la normalización de carga sin LLM (`"190"` → `190`, `"62,5"` → `62.5`, `"40 kg"` → `40`; `"+10 kg de lastre"`, `"40 kg/lado"`, `"I10-D10"` → `null`, preservando siempre `load_raw` verbatim). El parseo por lenguaje natural (LLM) llega en Fase 4 — hasta entonces la normalización es puramente por regex.
+
 ## Cómo funciona el sync
 
 - Todo registro local nace con `synced: 0` y un `id` generado en cliente (`crypto.randomUUID()`), que es también la PK en Supabase.
@@ -103,4 +120,4 @@ El script descarga el dataset, traduce los nombres al español vía OpenRouter (
 
 ## Estado de esta fase
 
-Fase 2 de 6: catálogo de ejercicios (seed + búsqueda + alta de custom) y CRUD de plan (rutina → días → ejercicios con targets). Log de sesión, historial y comidas llegan en fases posteriores — sus tabs en la navegación inferior son placeholders deshabilitados.
+Fase 3 de 6: log de sesión de entrenamiento (sets por ejercicio con autocompletado desde la última sesión, métricas diarias de sueño/sensación, cardio/natación, notas) e historial con indicador simple de progresión. Comidas sigue como placeholder deshabilitado; parse por lenguaje natural (LLM) llega en Fase 4.

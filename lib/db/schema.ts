@@ -22,4 +22,9 @@ export function applySchema(db: Dexie) {
     daily_metrics: "id, synced, user_id, metric_date, [user_id+metric_date]",
     test_records: "id, synced, user_id, created_at",
   });
+
+  // Phase 1 scaffolding (test_records) is gone — deleting a store on an
+  // existing version bumps the version and drops it locally without
+  // touching devices that never installed v1.
+  db.version(2).stores({ test_records: null });
 }

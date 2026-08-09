@@ -1,0 +1,118 @@
+[
+  {
+    "name_es": "Dominadas lastradas",
+    "muscle_group": "espalda",
+    "dataset_id": "Weighted_Pull_Ups"
+  },
+  {
+    "name_es": "Crunch declinado con lastre",
+    "muscle_group": "core",
+    "dataset_id": "Decline_Crunch"
+  },
+  {
+    "name_es": "Press inclinado Hammer",
+    "muscle_group": "pecho",
+    "dataset_id": null,
+    "name_en": "Hammer Strength Incline Press",
+    "equipment": "machine",
+    "image_url": null
+  },
+  {
+    "name_es": "Jalón narrow MAG grip",
+    "muscle_group": "espalda",
+    "dataset_id": "Close-Grip_Front_Lat_Pulldown"
+  },
+  {
+    "name_es": "Aperturas en polea",
+    "muscle_group": "pecho",
+    "dataset_id": "Cable_Crossover"
+  },
+  {
+    "name_es": "Vuelos laterales",
+    "muscle_group": "hombros",
+    "dataset_id": "Side_Lateral_Raise"
+  },
+  {
+    "name_es": "Prensa inclinada 45°",
+    "muscle_group": "cuádriceps",
+    "dataset_id": "Leg_Press"
+  },
+  {
+    "name_es": "Peso muerto rumano con mancuernas",
+    "muscle_group": "isquios",
+    "dataset_id": "Romanian_Deadlift"
+  },
+  {
+    "name_es": "Curl femoral sentado",
+    "muscle_group": "isquios",
+    "dataset_id": "Seated_Leg_Curl"
+  },
+  {
+    "name_es": "Curl femoral parado unilateral",
+    "muscle_group": "isquios",
+    "dataset_id": "Standing_Leg_Curl"
+  },
+  {
+    "name_es": "Curl invertido en polea",
+    "muscle_group": "antebrazos",
+    "dataset_id": "Reverse_Cable_Curl"
+  },
+  {
+    "name_es": "Briefcase carry",
+    "muscle_group": "core",
+    "dataset_id": "Farmers_Walk"
+  },
+  {
+    "name_es": "Crunch en máquina",
+    "muscle_group": "core",
+    "dataset_id": "Ab_Crunch_Machine"
+  },
+  {
+    "name_es": "Press inclinado con mancuernas",
+    "muscle_group": "pecho",
+    "dataset_id": "Incline_Dumbbell_Press"
+  },
+  {
+    "name_es": "Remo en cable MAG grip",
+    "muscle_group": "espalda",
+    "dataset_id": "Seated_Cable_Rows"
+  },
+  {
+    "name_es": "Straight-arm pulldown",
+    "muscle_group": "espalda",
+    "dataset_id": "Straight-Arm_Pulldown"
+  },
+  {
+    "name_es": "Curl martillo en polea",
+    "muscle_group": "bíceps",
+    "dataset_id": "Cable_Hammer_Curls_-_Rope_Attachment"
+  },
+  {
+    "name_es": "Extensión de tríceps en polea",
+    "muscle_group": "tríceps",
+    "dataset_id": "Triceps_Pushdown"
+  },
+  {
+    "name_es": "Sentadilla pendular",
+    "muscle_group": "cuádriceps",
+    "dataset_id": null,
+    "name_en": "Pendulum Squat",
+    "equipment": "machine",
+    "image_url": null
+  },
+  {
+    "name_es": "Hack squat",
+    "muscle_group": "cuádriceps",
+    "dataset_id": "Hack_Squat"
+  },
+  {
+    "name_es": "Elevación de piernas en silla romana",
+    "muscle_group": "core",
+    "dataset_id": "Hanging_Leg_Raise"
+  },
+  {
+    "name_es": "Extensión de cuádriceps",
+    "muscle_group": "cuádriceps",
+    "dataset_id": "Leg_Extensions"
+  }
+]

@@ -90,6 +90,10 @@ export interface LoggedSet extends BaseEntity {
   load_raw: string;
   /** Best-effort numeric parse of load_raw; null when it can't be normalized. */
   load_normalized_kg: number | null;
+  /** Soft delete: only offered in the UI while the parent session is still
+   * open ("solo se registra hacia adelante"). Same push-only upsert pipeline
+   * as routines/routine_days/routine_day_exercises. Null means not deleted. */
+  deleted_at: string | null;
 }
 
 export interface CardioSession extends BaseEntity {

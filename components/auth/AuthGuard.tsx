@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { BottomNav } from "@/components/nav/BottomNav";
+import { SyncStatusBadge } from "@/components/sync/SyncStatusBadge";
 import { ensureExerciseSeed } from "@/lib/db/exercises";
 import { createClient } from "@/lib/supabase/client";
 import { useSyncTrigger } from "@/lib/sync/useSyncTrigger";
@@ -65,6 +66,9 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <div className="sticky top-0 z-10 flex justify-end border-b border-neutral-800 bg-neutral-950 p-2">
+        <SyncStatusBadge />
+      </div>
       <div className="flex-1">{children}</div>
       <BottomNav />
     </div>

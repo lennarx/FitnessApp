@@ -130,6 +130,14 @@ export interface DailyMetrics extends BaseEntity {
   steps: number | null;
 }
 
+export interface NlInbox extends BaseEntity {
+  kind: "sets" | "meal";
+  raw_text: string;
+  /** "discarded" es el estado terminal — no hay deleted_at porque el
+   * status ya cumple ese rol y el sync es push-only igual. */
+  status: "pending" | "processed" | "discarded";
+}
+
 export type LocalExercise = LocalRecord<Exercise>;
 export type LocalRoutine = LocalRecord<Routine>;
 export type LocalRoutineDay = LocalRecord<RoutineDay>;
@@ -140,3 +148,4 @@ export type LocalCardioSession = LocalRecord<CardioSession>;
 export type LocalMeal = LocalRecord<Meal>;
 export type LocalBodyWeight = LocalRecord<BodyWeight>;
 export type LocalDailyMetrics = LocalRecord<DailyMetrics>;
+export type LocalNlInbox = LocalRecord<NlInbox>;

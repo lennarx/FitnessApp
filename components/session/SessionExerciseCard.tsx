@@ -32,10 +32,16 @@ export function SessionExerciseCard({
         .join(" · ")
     : "Agregado a la sesión";
 
-  // set_order is 0-indexed, so it also doubles as "how many sets are
-  // already logged" — the index into last session's sets for the same
-  // set number (match por nº de serie, cae a la última si faltan).
-  const nextSetOrder = sets.length;
+  // sets already filters out soft-deleted rows, so sets.length undercounts
+  // once a mid-session set is deleted (e.g. sets 0,1,2 logged, 1 deleted ->
+  // sets.length is 2, but set_order 2 is still taken -> a naive "length as
+  // next order" would collide with it). max+1 always lands on an unused
+  // set_order regardless of gaps from deletions.
+  const nextSetOrder =
+    sets.length > 0 ? Math.max(...sets.map((s) => s.set_order)) + 1 : 0;
+  // Still used as the index for "match por nº de serie" against the last
+  // session's sets — gaps just mean the fallback (last available set) kicks
+  // in a little earlier, which is an acceptable prefill degradation.
   const prefillSet = lastSets
     ? (lastSets[nextSetOrder] ?? lastSets[lastSets.length - 1])
     : undefined;

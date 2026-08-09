@@ -69,7 +69,7 @@ export default function SessionLogPage() {
         </p>
       )}
 
-      <DailyMetricsPanel metricDate={session?.session_date ?? ""} />
+      {session && <DailyMetricsPanel metricDate={session.session_date} />}
 
       <div className="flex flex-col gap-2">
         {entries === undefined ? (

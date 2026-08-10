@@ -114,13 +114,21 @@ export interface Meal extends BaseEntity {
   portion_raw: string | null;
   portion_grams: number | null;
   training_day_flag: boolean;
+  /** "unparsed" doubles as a terminal "no procesar" state set explicitly by
+   * the user, not just the unused DB default — see lib/db/meals.ts. */
   parse_status: "unparsed" | "pending_parse" | "parsed";
+  /** Soft delete: same push-only upsert pipeline as routines/logged_sets.
+   * Null means not deleted. */
+  deleted_at: string | null;
 }
 
 export interface BodyWeight extends BaseEntity {
   measured_at: string;
   weight_kg: number;
   notes: string | null;
+  /** Soft delete: covers a duplicate entry from a double tap, which
+   * edit-in-place alone can't fix. Null means not deleted. */
+  deleted_at: string | null;
 }
 
 export interface DailyMetrics extends BaseEntity {

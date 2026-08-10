@@ -33,3 +33,44 @@ export function formatSessionDate(date: string): string {
   const local = new Date(year, month - 1, day);
   return `${WEEKDAYS_ES[local.getDay()]} ${local.getDate()} ${MONTHS_ES[local.getMonth()]}`;
 }
+
+/** "2026-08-09" + 1 -> "2026-08-10" (or -1 -> "2026-08-08"). Local calendar
+ * arithmetic via the Date constructor's day-overflow rollover, not UTC math,
+ * so it can't skip or repeat a day across a DST boundary. */
+export function addLocalDays(date: string, n: number): string {
+  const [year, month, day] = date.split("-").map(Number);
+  const local = new Date(year, month - 1, day + n);
+  const y = local.getFullYear();
+  const m = String(local.getMonth() + 1).padStart(2, "0");
+  const d = String(local.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+/**
+ * Local calendar day "2026-08-09" -> the [start, end) ISO instant range that
+ * covers it, in UTC (the format `occurred_at` is always stored in). Lets a
+ * Dexie query on the `occurred_at` index use `.between(startIso, endIso)`
+ * instead of loading every meal and filtering in JS.
+ */
+export function localDayRangeIso(date: string): { startIso: string; endIso: string } {
+  const [year, month, day] = date.split("-").map(Number);
+  const start = new Date(year, month - 1, day, 0, 0, 0, 0);
+  const end = new Date(year, month - 1, day + 1, 0, 0, 0, 0);
+  return { startIso: start.toISOString(), endIso: end.toISOString() };
+}
+
+/**
+ * Parses an `<input type="time">` value ("HH:MM") into numeric parts, or
+ * null when it's empty or malformed — e.g. the user clears the field right
+ * before submitting. Returning null (rather than NaN) lets callers pick
+ * their own fallback instead of building an Invalid Date whose
+ * toISOString() throws and crashes the submit flow.
+ */
+export function parseTimeInput(time: string): { hours: number; minutes: number } | null {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(time.trim());
+  if (!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+  return { hours, minutes };
+}

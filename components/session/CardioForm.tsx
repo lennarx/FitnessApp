@@ -11,19 +11,25 @@ export function CardioForm({ onClose }: { onClose: () => void }) {
   const [intensityRaw, setIntensityRaw] = useState("");
   const [intensityRpe, setIntensityRpe] = useState("");
   const [notes, setNotes] = useState("");
+  const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!durationMinutes.trim()) return;
-    await createCardioSession({
-      activity_type: activityType,
-      duration_minutes: Number(durationMinutes),
-      distance_meters: distanceMeters.trim() === "" ? null : Number(distanceMeters),
-      intensity_raw: intensityRaw.trim() === "" ? null : intensityRaw.trim(),
-      intensity_rpe: intensityRpe.trim() === "" ? null : Number(intensityRpe),
-      notes: notes.trim() === "" ? null : notes.trim(),
-    });
-    onClose();
+    if (!durationMinutes.trim() || saving) return;
+    setSaving(true);
+    try {
+      await createCardioSession({
+        activity_type: activityType,
+        duration_minutes: Number(durationMinutes),
+        distance_meters: distanceMeters.trim() === "" ? null : Number(distanceMeters),
+        intensity_raw: intensityRaw.trim() === "" ? null : intensityRaw.trim(),
+        intensity_rpe: intensityRpe.trim() === "" ? null : Number(intensityRpe),
+        notes: notes.trim() === "" ? null : notes.trim(),
+      });
+      onClose();
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -91,10 +97,10 @@ export function CardioForm({ onClose }: { onClose: () => void }) {
         </label>
         <button
           type="submit"
-          disabled={!durationMinutes.trim()}
+          disabled={!durationMinutes.trim() || saving}
           className="w-full rounded-md bg-emerald-600 px-4 py-3 text-base font-medium text-white disabled:opacity-50"
         >
-          Guardar
+          {saving ? "Guardando..." : "Guardar"}
         </button>
       </form>
     </Modal>

@@ -2,12 +2,15 @@
 
 import { useLiveQuery } from "dexie-react-hooks";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { db } from "@/lib/db";
 import { createRoutine } from "@/lib/db/routines";
 
 export default function PlanPage() {
   const [newName, setNewName] = useState("");
+  const [creating, setCreating] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const routines = useLiveQuery(async () => {
     const all = await db.routines.toArray();
@@ -18,9 +21,14 @@ export default function PlanPage() {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (!newName.trim()) return;
-    await createRoutine(newName);
-    setNewName("");
+    if (!newName.trim() || creating) return;
+    setCreating(true);
+    try {
+      await createRoutine(newName);
+      setNewName("");
+    } finally {
+      setCreating(false);
+    }
   }
 
   return (
@@ -29,6 +37,7 @@ export default function PlanPage() {
 
       <form onSubmit={handleCreate} className="flex gap-2">
         <input
+          ref={nameInputRef}
           type="text"
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
@@ -37,10 +46,10 @@ export default function PlanPage() {
         />
         <button
           type="submit"
-          disabled={!newName.trim()}
+          disabled={!newName.trim() || creating}
           className="rounded-md bg-emerald-600 px-4 py-3 text-base font-medium text-white disabled:opacity-50"
         >
-          Crear
+          {creating ? "Creando..." : "Crear"}
         </button>
       </form>
 
@@ -48,7 +57,10 @@ export default function PlanPage() {
         {routines === undefined ? (
           <p className="text-neutral-500">Cargando...</p>
         ) : routines.length === 0 ? (
-          <p className="text-neutral-500">Todavía no hay rutinas.</p>
+          <EmptyState
+            message="Todavía no hay rutinas."
+            cta={{ label: "Crear la primera", onClick: () => nameInputRef.current?.focus() }}
+          />
         ) : (
           routines.map((routine) => (
             <Link

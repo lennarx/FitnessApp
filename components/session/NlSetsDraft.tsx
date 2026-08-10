@@ -4,12 +4,10 @@ import { useMemo, useState } from "react";
 import { ExerciseListItem } from "@/components/exercises/ExerciseListItem";
 import { ExercisePickerModal } from "@/components/exercises/ExercisePickerModal";
 import { Modal } from "@/components/ui/Modal";
-import { db } from "@/lib/db";
 import { createLoggedSet } from "@/lib/db/sessions";
 import { useExercises } from "@/lib/db/useExercises";
 import { resolveExerciseMatch } from "@/lib/parse/matchExercise";
 import type { ParsedSet } from "@/lib/parse/validateParseResult";
-import { nextSetOrder } from "@/lib/utils/setOrder";
 import type { LocalExercise } from "@/types/entities";
 
 interface DraftRow {
@@ -61,6 +59,7 @@ export function NlSetsDraft({
   const [showPicker, setShowPicker] = useState(false);
   const [rows, setRows] = useState<DraftRow[]>(toDraftRows(initialSets));
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
   const [autoResolved, setAutoResolved] = useState(false);
 
   const match = useMemo(() => {
@@ -111,26 +110,23 @@ export function NlSetsDraft({
   async function handleConfirm() {
     if (!selectedExercise || !canConfirm) return;
     setSaving(true);
+    setError(false);
     try {
-      const existing = await db.logged_sets
-        .where("training_session_id")
-        .equals(sessionId)
-        .filter((s) => s.exercise_id === selectedExercise.id && s.deleted_at === null)
-        .toArray();
-
-      const baseOrder = nextSetOrder(existing);
-      for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
+      // Awaited sequentially (not Promise.all) so each createLoggedSet's own
+      // transaction sees the previous row already committed and picks the
+      // next set_order correctly.
+      for (const row of rows) {
         await createLoggedSet({
           training_session_id: sessionId,
           exercise_id: selectedExercise.id,
-          set_order: baseOrder + i,
           load_raw: row.load_raw,
           reps: Number(row.reps),
           rir: row.rir.trim() === "" ? null : Number(row.rir),
         });
       }
       onConfirmed();
+    } catch {
+      setError(true);
     } finally {
       setSaving(false);
     }
@@ -225,6 +221,11 @@ export function NlSetsDraft({
         >
           {saving ? "Guardando..." : "Confirmar y guardar"}
         </button>
+        {error && (
+          <p className="text-sm text-red-400">
+            Algo salió mal guardando las series. Revisá cuáles quedaron cargadas y probá de nuevo.
+          </p>
+        )}
       </div>
 
       {showPicker && (

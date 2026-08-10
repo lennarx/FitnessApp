@@ -36,7 +36,7 @@ export function MealDetailModal({ meal, onClose }: { meal: LocalMeal; onClose: (
     if (online) {
       const result = await requestMealParse(trimmed);
       if (result.ok) {
-        await applyMealParse(meal.id, result.parsed);
+        await applyMealParse(meal.id, result.parsed, trimmed);
       }
     }
     setSaving(false);
@@ -64,6 +64,7 @@ export function MealDetailModal({ meal, onClose }: { meal: LocalMeal; onClose: (
   }
 
   async function handleDelete() {
+    if (!confirm("¿Borrar esta comida?")) return;
     await deleteMeal(meal.id);
     onClose();
   }

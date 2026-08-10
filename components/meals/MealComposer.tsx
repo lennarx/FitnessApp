@@ -63,7 +63,7 @@ export function MealComposer({
       void (async () => {
         const result = await requestMealParse(trimmed);
         if (result.ok) {
-          await applyMealParse(id, result.parsed);
+          await applyMealParse(id, result.parsed, trimmed);
         }
       })();
     }

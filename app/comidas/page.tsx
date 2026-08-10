@@ -53,7 +53,7 @@ export default function ComidasPage() {
     for (const meal of pendingMeals) {
       const result = await requestMealParse(meal.raw_text);
       if (result.ok) {
-        await applyMealParse(meal.id, result.parsed);
+        await applyMealParse(meal.id, result.parsed, meal.raw_text);
       }
     }
     setProcessingPending(false);
@@ -110,7 +110,9 @@ export default function ComidasPage() {
             {meals === undefined ? (
               <p className="text-neutral-500">Cargando...</p>
             ) : meals.length === 0 ? (
-              <p className="text-neutral-500">Sin comidas registradas.</p>
+              <p className="text-neutral-500">
+                Sin comidas registradas. Usá el campo de arriba para cargar la primera.
+              </p>
             ) : (
               meals.map((meal) => (
                 <MealListItem key={meal.id} meal={meal} onClick={() => setSelectedMeal(meal)} />

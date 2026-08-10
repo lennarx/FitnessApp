@@ -20,18 +20,27 @@ export function BodyWeightSection() {
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editWeight, setEditWeight] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [savingEditId, setSavingEditId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (saving) return;
     const parsed = parseBodyWeightKg(weightInput);
     if (parsed === null) {
       setError("Ingresá un peso válido en kg.");
       return;
     }
     setError(null);
-    await createBodyWeight({ weight_kg: parsed, notes: notes.trim() === "" ? null : notes.trim() });
-    setWeightInput("");
-    setNotes("");
+    setSaving(true);
+    try {
+      await createBodyWeight({ weight_kg: parsed, notes: notes.trim() === "" ? null : notes.trim() });
+      setWeightInput("");
+      setNotes("");
+    } finally {
+      setSaving(false);
+    }
   }
 
   function startEdit(entry: LocalBodyWeight) {
@@ -40,11 +49,27 @@ export function BodyWeightSection() {
   }
 
   async function handleSaveEdit(id: string) {
+    if (savingEditId === id) return;
     const parsed = parseBodyWeightKg(editWeight);
     if (parsed !== null) {
-      await updateBodyWeight(id, { weight_kg: parsed });
+      setSavingEditId(id);
+      try {
+        await updateBodyWeight(id, { weight_kg: parsed });
+      } finally {
+        setSavingEditId(null);
+      }
     }
     setEditingId(null);
+  }
+
+  async function handleDelete(id: string) {
+    if (deletingId === id || !confirm("¿Borrar esta medición de peso?")) return;
+    setDeletingId(id);
+    try {
+      await deleteBodyWeight(id);
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   return (
@@ -75,10 +100,10 @@ export function BodyWeightSection() {
         {error && <p className="text-sm text-red-400">{error}</p>}
         <button
           type="submit"
-          disabled={!weightInput.trim()}
+          disabled={!weightInput.trim() || saving}
           className="rounded-md bg-emerald-600 px-4 py-3 text-base font-medium text-white disabled:opacity-50"
         >
-          Registrar
+          {saving ? "Guardando..." : "Registrar"}
         </button>
       </form>
 
@@ -86,7 +111,9 @@ export function BodyWeightSection() {
         {log === undefined ? (
           <p className="text-neutral-500">Cargando...</p>
         ) : log.length === 0 ? (
-          <p className="text-neutral-500">Sin mediciones registradas.</p>
+          <p className="text-neutral-500">
+            Sin mediciones registradas. Usá el formulario de arriba para cargar la primera.
+          </p>
         ) : (
           log.map(({ entry, delta_kg }) => (
             <div
@@ -125,7 +152,11 @@ export function BodyWeightSection() {
                       </span>
                     );
                   })()}
-                <button onClick={() => deleteBodyWeight(entry.id)} className="text-sm text-red-400">
+                <button
+                  onClick={() => handleDelete(entry.id)}
+                  disabled={deletingId === entry.id}
+                  className="text-sm text-red-400 disabled:opacity-50"
+                >
                   Borrar
                 </button>
               </div>

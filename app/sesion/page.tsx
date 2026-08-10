@@ -4,6 +4,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CardioForm } from "@/components/session/CardioForm";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { db } from "@/lib/db";
 import { getOrCreateTrainingSession } from "@/lib/db/sessions";
 import { todayLocalDate } from "@/lib/utils/dates";
@@ -55,7 +56,15 @@ export default function SesionPage() {
         {activeRoutine === undefined || days === undefined ? (
           <p className="text-neutral-500">Cargando...</p>
         ) : !activeRoutine ? (
-          <p className="text-neutral-500">No hay una rutina activa. Creá una en Plan.</p>
+          <EmptyState
+            message="No hay una rutina activa."
+            cta={{ label: "Ir a Plan", href: "/plan" }}
+          />
+        ) : days.length === 0 ? (
+          <EmptyState
+            message="Tu rutina no tiene días todavía."
+            cta={{ label: "Agregar días", href: `/plan/${activeRoutine.id}` }}
+          />
         ) : (
           days.map((day) => (
             <button

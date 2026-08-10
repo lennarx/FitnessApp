@@ -21,15 +21,21 @@ export function SetDraftRow({
   const [loadRaw, setLoadRaw] = useState(initialLoadRaw);
   const [reps, setReps] = useState(initialReps);
   const [rir, setRir] = useState("");
+  const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!loadRaw.trim() || !reps.trim()) return;
-    await onSubmit({
-      load_raw: loadRaw,
-      reps: Number(reps),
-      rir: rir === "" ? null : Number(rir),
-    });
+    if (!loadRaw.trim() || !reps.trim() || saving) return;
+    setSaving(true);
+    try {
+      await onSubmit({
+        load_raw: loadRaw,
+        reps: Number(reps),
+        rir: rir === "" ? null : Number(rir),
+      });
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -71,10 +77,10 @@ export function SetDraftRow({
       </div>
       <button
         type="submit"
-        disabled={!loadRaw.trim() || !reps.trim()}
+        disabled={!loadRaw.trim() || !reps.trim() || saving}
         className="w-full rounded-md bg-emerald-600 px-4 py-3 text-base font-medium text-white disabled:opacity-50"
       >
-        Registrar serie
+        {saving ? "Guardando..." : "Registrar serie"}
       </button>
     </form>
   );

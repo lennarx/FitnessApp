@@ -49,7 +49,6 @@ export function SessionExerciseCard({
     await createLoggedSet({
       training_session_id: sessionId,
       exercise_id: exercise.id,
-      set_order: setOrder,
       ...input,
     });
   }

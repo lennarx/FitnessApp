@@ -13,9 +13,9 @@ import type {
 } from "@/types/entities";
 
 /**
- * Flat, unfiltered read of every table the export needs. All soft-delete and
- * user filtering happens in buildWorkbookData, which is the part that's
- * actually tested — this stays a thin, untested I/O layer on purpose.
+ * Flat, unfiltered read of every table the export needs. All soft-delete filtering
+ * happens in buildWorkbookData, which is the part that's actually tested — this
+ * stays a thin, untested I/O layer on purpose.
  */
 export interface ExportSnapshot {
   routines: LocalRoutine[];

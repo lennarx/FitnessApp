@@ -166,9 +166,16 @@ function buildRegistroSheet(snapshot: ExportSnapshot): WorkbookSheet {
     });
   }
 
-  entries.sort((a, b) =>
-    a.fecha === b.fecha ? a.orderWithinDay - b.orderWithinDay : a.fecha.localeCompare(b.fecha)
-  );
+  entries.sort((a, b) => {
+    if (a.fecha !== b.fecha) return a.fecha.localeCompare(b.fecha);
+    if (a.orderWithinDay !== b.orderWithinDay) return a.orderWithinDay - b.orderWithinDay;
+
+    const aEjercicio = String(a.row.ejercicio ?? "");
+    const bEjercicio = String(b.row.ejercicio ?? "");
+    if (aEjercicio !== bEjercicio) return aEjercicio.localeCompare(bEjercicio);
+
+    return String(a.row.tipo ?? "").localeCompare(String(b.row.tipo ?? ""));
+  });
 
   return { name: "Registro", headers: REGISTRO_HEADERS, rows: entries.map((e) => e.row) };
 }

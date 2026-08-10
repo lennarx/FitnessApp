@@ -6,6 +6,7 @@ import type {
   LocalExercise,
   LocalLoggedSet,
   LocalMeal,
+  LocalNlInbox,
   LocalRoutine,
   LocalRoutineDay,
   LocalRoutineDayExercise,
@@ -24,6 +25,7 @@ class FitnessDB extends Dexie {
   meals!: Table<LocalMeal, string>;
   body_weight!: Table<LocalBodyWeight, string>;
   daily_metrics!: Table<LocalDailyMetrics, string>;
+  nl_inbox!: Table<LocalNlInbox, string>;
 
   constructor() {
     super("fitness-app");

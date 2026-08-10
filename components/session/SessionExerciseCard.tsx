@@ -6,6 +6,7 @@ import { SetDraftRow } from "@/components/session/SetDraftRow";
 import { createLoggedSet } from "@/lib/db/sessions";
 import { useLastSessionSets } from "@/lib/db/useLastSessionSets";
 import type { SessionExerciseEntry } from "@/lib/db/useSessionLog";
+import { nextSetOrder } from "@/lib/utils/setOrder";
 
 export function SessionExerciseCard({
   entry,
@@ -32,18 +33,12 @@ export function SessionExerciseCard({
         .join(" · ")
     : "Agregado a la sesión";
 
-  // sets already filters out soft-deleted rows, so sets.length undercounts
-  // once a mid-session set is deleted (e.g. sets 0,1,2 logged, 1 deleted ->
-  // sets.length is 2, but set_order 2 is still taken -> a naive "length as
-  // next order" would collide with it). max+1 always lands on an unused
-  // set_order regardless of gaps from deletions.
-  const nextSetOrder =
-    sets.length > 0 ? Math.max(...sets.map((s) => s.set_order)) + 1 : 0;
+  const setOrder = nextSetOrder(sets);
   // Still used as the index for "match por nº de serie" against the last
   // session's sets — gaps just mean the fallback (last available set) kicks
   // in a little earlier, which is an acceptable prefill degradation.
   const prefillSet = lastSets
-    ? (lastSets[nextSetOrder] ?? lastSets[lastSets.length - 1])
+    ? (lastSets[setOrder] ?? lastSets[lastSets.length - 1])
     : undefined;
 
   async function handleRegisterSet(input: {
@@ -54,7 +49,7 @@ export function SessionExerciseCard({
     await createLoggedSet({
       training_session_id: sessionId,
       exercise_id: exercise.id,
-      set_order: nextSetOrder,
+      set_order: setOrder,
       ...input,
     });
   }
@@ -84,7 +79,7 @@ export function SessionExerciseCard({
           ))}
           {editable && (
             <SetDraftRow
-              key={nextSetOrder}
+              key={setOrder}
               initialLoadRaw={prefillSet?.load_raw ?? ""}
               initialReps={prefillSet ? String(prefillSet.reps) : ""}
               onSubmit={handleRegisterSet}

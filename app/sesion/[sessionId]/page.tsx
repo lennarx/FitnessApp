@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { CardioForm } from "@/components/session/CardioForm";
 import { DailyMetricsPanel } from "@/components/session/DailyMetricsPanel";
+import { NlQuickLog } from "@/components/session/NlQuickLog";
 import { SessionExerciseCard } from "@/components/session/SessionExerciseCard";
 import { SessionNotes } from "@/components/session/SessionNotes";
 import { ExercisePickerModal } from "@/components/exercises/ExercisePickerModal";
@@ -68,6 +69,8 @@ export default function SessionLogPage() {
           Sesión cerrada — solo lectura.
         </p>
       )}
+
+      {editable && <NlQuickLog sessionId={sessionId} />}
 
       {session && <DailyMetricsPanel metricDate={session.session_date} />}
 

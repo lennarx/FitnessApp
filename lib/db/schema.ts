@@ -27,4 +27,10 @@ export function applySchema(db: Dexie) {
   // existing version bumps the version and drops it locally without
   // touching devices that never installed v1.
   db.version(2).stores({ test_records: null });
+
+  // Phase 4: offline fallback for the NL parse endpoint. A new store (unlike
+  // Phase 3's deleted_at, a non-indexed column) needs a version bump.
+  db.version(3).stores({
+    nl_inbox: "id, synced, user_id, status, created_at",
+  });
 }

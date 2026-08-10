@@ -43,6 +43,15 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/auth");
 
   if (!user && !isPublicRoute) {
+    // API routes are called by fetch(), not navigated to — a 307 redirect
+    // to /login would just be an opaque non-2xx response to the caller, so
+    // route handlers get a plain 401 JSON body instead. The handler itself
+    // (see app/api/parse/route.ts) still revalidates the session — this is
+    // defense in depth, not the only auth check.
+    if (request.nextUrl.pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
     return NextResponse.redirect(loginUrl);

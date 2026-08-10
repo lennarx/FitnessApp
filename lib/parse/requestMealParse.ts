@@ -33,6 +33,12 @@ export async function requestMealParse(text: string): Promise<MealParseResult> {
   if (res.status === 422) return { ok: false, reason: "malformed" };
   if (!res.ok) return { ok: false, reason: "upstream" };
 
-  const parsed = (await res.json()) as ParsedMeal;
-  return { ok: true, parsed };
+  try {
+    const parsed = (await res.json()) as ParsedMeal;
+    return { ok: true, parsed };
+  } catch {
+    // A 2xx response with an empty/non-JSON body (proxy or CDN edge case) —
+    // treat it the same as a structurally invalid parse result.
+    return { ok: false, reason: "malformed" };
+  }
 }

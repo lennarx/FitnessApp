@@ -11,6 +11,7 @@ import {
 } from "@/lib/db/meals";
 import { requestMealParse } from "@/lib/parse/requestMealParse";
 import { useOnline } from "@/lib/sync/useOnline";
+import { parseTimeInput } from "@/lib/utils/dates";
 import type { LocalMeal } from "@/types/entities";
 
 function toTimeInput(iso: string): string {
@@ -43,9 +44,17 @@ export function MealDetailModal({ meal, onClose }: { meal: LocalMeal; onClose: (
 
   async function handleSaveTime() {
     if (time === toTimeInput(meal.occurred_at)) return;
+
+    const parsedTime = parseTimeInput(time);
+    if (!parsedTime) {
+      // Empty/malformed field (e.g. cleared before blur) — revert the
+      // input rather than build an Invalid Date and crash on toISOString().
+      setTime(toTimeInput(meal.occurred_at));
+      return;
+    }
+
     const occurredDate = new Date(meal.occurred_at);
-    const [hours, minutes] = time.split(":").map(Number);
-    occurredDate.setHours(hours, minutes, 0, 0);
+    occurredDate.setHours(parsedTime.hours, parsedTime.minutes, 0, 0);
     await updateMealOccurredAt(meal.id, occurredDate.toISOString());
   }
 

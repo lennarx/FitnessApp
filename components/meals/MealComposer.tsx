@@ -5,6 +5,7 @@ import { NlTextInput } from "@/components/nl/NlTextInput";
 import { applyMealParse, createMeal } from "@/lib/db/meals";
 import { requestMealParse } from "@/lib/parse/requestMealParse";
 import { useOnline } from "@/lib/sync/useOnline";
+import { parseTimeInput } from "@/lib/utils/dates";
 
 function nowHHMM(): string {
   const now = new Date();
@@ -38,7 +39,14 @@ export function MealComposer({
     setSaving(true);
 
     const [year, month, day] = date.split("-").map(Number);
-    const [hours, minutes] = time.split(":").map(Number);
+    // Falls back to the current time rather than trusting the field
+    // verbatim — an empty/cleared <input type="time"> would otherwise
+    // build an Invalid Date and crash the submit on toISOString().
+    const now = new Date();
+    const { hours, minutes } = parseTimeInput(time) ?? {
+      hours: now.getHours(),
+      minutes: now.getMinutes(),
+    };
     const occurredAt = new Date(year, month - 1, day, hours, minutes, 0, 0).toISOString();
 
     const id = await createMeal({

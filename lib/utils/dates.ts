@@ -58,3 +58,19 @@ export function localDayRangeIso(date: string): { startIso: string; endIso: stri
   const end = new Date(year, month - 1, day + 1, 0, 0, 0, 0);
   return { startIso: start.toISOString(), endIso: end.toISOString() };
 }
+
+/**
+ * Parses an `<input type="time">` value ("HH:MM") into numeric parts, or
+ * null when it's empty or malformed — e.g. the user clears the field right
+ * before submitting. Returning null (rather than NaN) lets callers pick
+ * their own fallback instead of building an Invalid Date whose
+ * toISOString() throws and crashes the submit flow.
+ */
+export function parseTimeInput(time: string): { hours: number; minutes: number } | null {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(time.trim());
+  if (!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+  return { hours, minutes };
+}

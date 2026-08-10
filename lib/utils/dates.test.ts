@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addLocalDays, formatSessionDate, localDayRangeIso } from "./dates";
+import { addLocalDays, formatSessionDate, localDayRangeIso, parseTimeInput } from "./dates";
 
 describe("addLocalDays", () => {
   it.each([
@@ -35,4 +35,21 @@ describe("formatSessionDate", () => {
   it("formats a known date", () => {
     expect(formatSessionDate("2026-08-09")).toBe("dom 9 ago");
   });
+});
+
+describe("parseTimeInput", () => {
+  it.each([
+    ["09:05", { hours: 9, minutes: 5 }],
+    ["23:59", { hours: 23, minutes: 59 }],
+    ["00:00", { hours: 0, minutes: 0 }],
+  ])("parses %s", (time, expected) => {
+    expect(parseTimeInput(time)).toEqual(expected);
+  });
+
+  it.each([[""], ["  "], ["24:00"], ["12:60"], ["-1:00"], ["abc"], ["12"], ["12:5"]])(
+    "returns null for %s",
+    (time) => {
+      expect(parseTimeInput(time)).toBeNull();
+    }
+  );
 });

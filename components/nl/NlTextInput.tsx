@@ -88,6 +88,7 @@ export function NlTextInput({
       >
         {busy ? "Procesando..." : submitLabel}
       </button>
+      {speech.error && <p className="text-sm text-red-400">{speech.error}</p>}
     </form>
   );
 }

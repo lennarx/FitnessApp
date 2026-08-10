@@ -9,6 +9,7 @@ import { NlQuickLog } from "@/components/session/NlQuickLog";
 import { SessionExerciseCard } from "@/components/session/SessionExerciseCard";
 import { SessionNotes } from "@/components/session/SessionNotes";
 import { ExercisePickerModal } from "@/components/exercises/ExercisePickerModal";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { db } from "@/lib/db";
 import { endTrainingSession } from "@/lib/db/sessions";
 import { useSessionLog, type SessionExerciseEntry } from "@/lib/db/useSessionLog";
@@ -77,6 +78,11 @@ export default function SessionLogPage() {
       <div className="flex flex-col gap-2">
         {entries === undefined ? (
           <p className="text-neutral-500">Cargando...</p>
+        ) : allEntries.length === 0 ? (
+          <EmptyState
+            message="Todavía no registraste nada en esta sesión."
+            cta={editable ? { label: "Agregar ejercicio", onClick: () => setShowPicker(true) } : undefined}
+          />
         ) : (
           allEntries.map((entry) => (
             <SessionExerciseCard

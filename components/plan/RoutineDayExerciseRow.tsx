@@ -16,9 +16,20 @@ export function RoutineDayExerciseRow({
   exercise: LocalExercise | undefined;
   onMoveUp: () => void;
   onMoveDown: () => void;
-  onDelete: () => void;
+  onDelete: () => Promise<void> | void;
 }) {
   const [editing, setEditing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    if (deleting || !confirm(`¿Borrar "${exercise?.name_es ?? "este ejercicio"}" de este día?`)) return;
+    setDeleting(true);
+    try {
+      await onDelete();
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   const rir = dayExercise.target_rir !== null ? `RIR ${dayExercise.target_rir}` : "";
   const rest = dayExercise.rest_seconds !== null ? `${dayExercise.rest_seconds}s descanso` : "";
@@ -49,7 +60,12 @@ export function RoutineDayExerciseRow({
           ▼
         </button>
       </div>
-      <button onClick={onDelete} className="px-2 text-sm text-red-400" aria-label="Borrar">
+      <button
+        onClick={handleDelete}
+        disabled={deleting}
+        className="px-2 text-sm text-red-400 disabled:opacity-50"
+        aria-label="Borrar"
+      >
         ✕
       </button>
 

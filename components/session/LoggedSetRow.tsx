@@ -15,15 +15,33 @@ export function LoggedSetRow({
   const [loadRaw, setLoadRaw] = useState(set.load_raw);
   const [reps, setReps] = useState(String(set.reps));
   const [rir, setRir] = useState(set.rir?.toString() ?? "");
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    await updateLoggedSet(set.id, {
-      load_raw: loadRaw,
-      reps: Number(reps),
-      rir: rir === "" ? null : Number(rir),
-    });
-    setEditing(false);
+    if (saving) return;
+    setSaving(true);
+    try {
+      await updateLoggedSet(set.id, {
+        load_raw: loadRaw,
+        reps: Number(reps),
+        rir: rir === "" ? null : Number(rir),
+      });
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (deleting || !confirm("¿Borrar esta serie?")) return;
+    setDeleting(true);
+    try {
+      await deleteLoggedSet(set.id);
+    } finally {
+      setDeleting(false);
+    }
   }
 
   if (editing) {
@@ -56,9 +74,10 @@ export function LoggedSetRow({
         />
         <button
           type="submit"
-          className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white"
+          disabled={saving}
+          className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
-          Guardar
+          {saving ? "Guardando..." : "Guardar"}
         </button>
       </form>
     );
@@ -82,8 +101,9 @@ export function LoggedSetRow({
             ✎
           </button>
           <button
-            onClick={() => deleteLoggedSet(set.id)}
-            className="px-2 text-sm text-red-400"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="px-2 text-sm text-red-400 disabled:opacity-50"
             aria-label="Borrar"
           >
             ✕

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { addLocalDays, formatSessionDate, localDayRangeIso, parseTimeInput } from "./dates";
+import {
+  addLocalDays,
+  formatSessionDate,
+  isoToLocalDateTime,
+  localDayRangeIso,
+  parseTimeInput,
+} from "./dates";
 
 describe("addLocalDays", () => {
   it.each([
@@ -34,6 +40,27 @@ describe("localDayRangeIso", () => {
 describe("formatSessionDate", () => {
   it("formats a known date", () => {
     expect(formatSessionDate("2026-08-09")).toBe("dom 9 ago");
+  });
+});
+
+describe("isoToLocalDateTime", () => {
+  it("round-trips a local instant built from known components", () => {
+    // Timezone-agnostic by construction: build the Date from local parts (as
+    // occurred_at is assembled in MealComposer) and check the same parts
+    // come back out, rather than asserting a fixed UTC string.
+    const local = new Date(2026, 7, 9, 21, 5, 0, 0);
+    expect(isoToLocalDateTime(local.toISOString())).toEqual({
+      fecha: "2026-08-09",
+      hora: "21:05",
+    });
+  });
+
+  it("pads single-digit month, day, hour and minute", () => {
+    const local = new Date(2026, 0, 3, 4, 7, 0, 0);
+    expect(isoToLocalDateTime(local.toISOString())).toEqual({
+      fecha: "2026-01-03",
+      hora: "04:07",
+    });
   });
 });
 

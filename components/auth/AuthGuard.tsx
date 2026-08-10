@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { BottomNav } from "@/components/nav/BottomNav";
 import { SyncStatusBadge } from "@/components/sync/SyncStatusBadge";
@@ -66,7 +67,14 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <div className="sticky top-0 z-10 flex justify-end border-b border-neutral-800 bg-neutral-950 p-2">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-800 bg-neutral-950 p-2">
+        <Link
+          href="/ajustes"
+          aria-label="Ajustes"
+          className="rounded-md px-2 py-1 text-lg text-neutral-400"
+        >
+          ⚙
+        </Link>
         <SyncStatusBadge />
       </div>
       <div className="flex-1">{children}</div>

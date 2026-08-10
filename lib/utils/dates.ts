@@ -60,6 +60,22 @@ export function localDayRangeIso(date: string): { startIso: string; endIso: stri
 }
 
 /**
+ * UTC ISO instant -> local calendar date + time, e.g. for occurred_at columns
+ * in the Excel export. Uses Date's local getters (not toISOString/slice),
+ * same reasoning as todayLocalDate: the UTC date can be a day off from the
+ * local one.
+ */
+export function isoToLocalDateTime(iso: string): { fecha: string; hora: string } {
+  const d = new Date(iso);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  return { fecha: `${year}-${month}-${day}`, hora: `${hours}:${minutes}` };
+}
+
+/**
  * Parses an `<input type="time">` value ("HH:MM") into numeric parts, or
  * null when it's empty or malformed — e.g. the user clears the field right
  * before submitting. Returning null (rather than NaN) lets callers pick

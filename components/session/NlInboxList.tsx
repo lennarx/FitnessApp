@@ -39,7 +39,9 @@ export function NlInboxList({
               </button>
               {!online && <span className="text-sm text-neutral-500">sin señal</span>}
               <button
-                onClick={() => discardNlInboxEntry(entry.id)}
+                onClick={() => {
+                  if (confirm("¿Descartar esta entrada sin procesar?")) discardNlInboxEntry(entry.id);
+                }}
                 className="text-sm text-red-400"
               >
                 Descartar

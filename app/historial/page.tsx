@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ExerciseListItem } from "@/components/exercises/ExerciseListItem";
 import { ExerciseSearchFilter } from "@/components/exercises/ExerciseSearchFilter";
 import { HistorySessionCard } from "@/components/history/HistorySessionCard";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useExercises } from "@/lib/db/useExercises";
 import { useExerciseHistory } from "@/lib/db/useExerciseHistory";
 import { useLoggedExerciseIds } from "@/lib/db/useLoggedExerciseIds";
@@ -47,18 +48,23 @@ export default function HistorialPage() {
     <main className="flex flex-col gap-4 p-4 pb-8">
       <h1 className="text-lg font-semibold">Historial</h1>
 
-      <ExerciseSearchFilter
-        search={search}
-        onSearchChange={setSearch}
-        muscleGroup={muscleGroup}
-        onMuscleGroupChange={setMuscleGroup}
-      />
+      {loggedIds === undefined || loggedIds.size > 0 ? (
+        <ExerciseSearchFilter
+          search={search}
+          onSearchChange={setSearch}
+          muscleGroup={muscleGroup}
+          onMuscleGroupChange={setMuscleGroup}
+        />
+      ) : null}
 
       <div className="flex flex-col gap-2">
         {loggedIds === undefined || exercises === undefined ? (
           <p className="text-neutral-500">Cargando...</p>
         ) : loggedIds.size === 0 ? (
-          <p className="text-neutral-500">Todavía no registraste ningún set.</p>
+          <EmptyState
+            message="Todavía no registraste ningún set."
+            cta={{ label: "Ir a Sesión", href: "/sesion" }}
+          />
         ) : loggedExercises === undefined || loggedExercises.length === 0 ? (
           <p className="text-neutral-500">Sin resultados.</p>
         ) : (

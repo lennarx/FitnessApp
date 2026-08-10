@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useSyncExternalStore } from "react";
+import { speechErrorMessage } from "./speechErrors";
 
 /**
  * Minimal Web Speech API surface — no @types/dom-speech-recognition
@@ -13,6 +14,9 @@ interface SpeechRecognitionResultLike {
 interface SpeechRecognitionEventLike extends Event {
   results: ArrayLike<SpeechRecognitionResultLike>;
 }
+interface SpeechRecognitionErrorEventLike extends Event {
+  error: string;
+}
 interface SpeechRecognitionLike extends EventTarget {
   lang: string;
   interimResults: boolean;
@@ -20,7 +24,7 @@ interface SpeechRecognitionLike extends EventTarget {
   start(): void;
   stop(): void;
   onresult: ((event: SpeechRecognitionEventLike) => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
   onend: (() => void) | null;
 }
 type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
@@ -58,6 +62,7 @@ function getSupportedServerSnapshot(): boolean {
 export function useSpeechRecognition(): {
   supported: boolean;
   listening: boolean;
+  error: string | null;
   start: (onResult: (transcript: string) => void) => void;
   stop: () => void;
 } {
@@ -67,11 +72,14 @@ export function useSpeechRecognition(): {
     getSupportedServerSnapshot
   );
   const [listening, setListening] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
   function start(onResult: (transcript: string) => void) {
     const Recognition = getSpeechRecognitionConstructor();
     if (!Recognition) return;
+
+    setError(null);
 
     const recognition = new Recognition();
     recognition.lang = "es-AR";
@@ -85,7 +93,11 @@ export function useSpeechRecognition(): {
       }
       onResult(transcript);
     };
-    recognition.onerror = () => setListening(false);
+    recognition.onerror = (event) => {
+      const message = speechErrorMessage(event.error);
+      if (message) setError(message);
+      setListening(false);
+    };
     recognition.onend = () => setListening(false);
 
     recognitionRef.current = recognition;
@@ -98,5 +110,5 @@ export function useSpeechRecognition(): {
     setListening(false);
   }
 
-  return { supported, listening, start, stop };
+  return { supported, listening, error, start, stop };
 }

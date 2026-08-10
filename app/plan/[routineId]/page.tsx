@@ -3,7 +3,8 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { db } from "@/lib/db";
 import { createRoutineDay, deleteRoutine, deleteRoutineDay } from "@/lib/db/routines";
 
@@ -11,6 +12,9 @@ export default function RoutineDaysPage() {
   const { routineId } = useParams<{ routineId: string }>();
   const router = useRouter();
   const [newLabel, setNewLabel] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [deletingDayId, setDeletingDayId] = useState<string | null>(null);
+  const labelInputRef = useRef<HTMLInputElement>(null);
 
   const routine = useLiveQuery(() => db.routines.get(routineId), [routineId]);
 
@@ -23,20 +27,36 @@ export default function RoutineDaysPage() {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (!newLabel.trim()) return;
-    const nextOrder = days && days.length > 0 ? Math.max(...days.map((d) => d.day_order)) + 1 : 0;
-    await createRoutineDay({
-      routine_id: routineId,
-      day_label: newLabel,
-      day_order: nextOrder,
-    });
-    setNewLabel("");
+    if (!newLabel.trim() || creating) return;
+    setCreating(true);
+    try {
+      const nextOrder = days && days.length > 0 ? Math.max(...days.map((d) => d.day_order)) + 1 : 0;
+      await createRoutineDay({
+        routine_id: routineId,
+        day_label: newLabel,
+        day_order: nextOrder,
+      });
+      setNewLabel("");
+    } finally {
+      setCreating(false);
+    }
   }
 
   async function handleDeleteRoutine() {
     if (!confirm(`¿Borrar la rutina "${routine?.name}" y todos sus días?`)) return;
     await deleteRoutine(routineId);
     router.push("/plan");
+  }
+
+  async function handleDeleteDay(dayId: string, dayLabel: string) {
+    if (deletingDayId === dayId) return;
+    if (!confirm(`¿Borrar el día "${dayLabel}" y todos sus ejercicios?`)) return;
+    setDeletingDayId(dayId);
+    try {
+      await deleteRoutineDay(dayId);
+    } finally {
+      setDeletingDayId(null);
+    }
   }
 
   return (
@@ -50,6 +70,7 @@ export default function RoutineDaysPage() {
 
       <form onSubmit={handleCreate} className="flex gap-2">
         <input
+          ref={labelInputRef}
           type="text"
           value={newLabel}
           onChange={(e) => setNewLabel(e.target.value)}
@@ -58,10 +79,10 @@ export default function RoutineDaysPage() {
         />
         <button
           type="submit"
-          disabled={!newLabel.trim()}
+          disabled={!newLabel.trim() || creating}
           className="rounded-md bg-emerald-600 px-4 py-3 text-base font-medium text-white disabled:opacity-50"
         >
-          Agregar
+          {creating ? "Agregando..." : "Agregar"}
         </button>
       </form>
 
@@ -69,7 +90,10 @@ export default function RoutineDaysPage() {
         {days === undefined ? (
           <p className="text-neutral-500">Cargando...</p>
         ) : days.length === 0 ? (
-          <p className="text-neutral-500">Todavía no hay días.</p>
+          <EmptyState
+            message="Todavía no hay días."
+            cta={{ label: "Agregar día", onClick: () => labelInputRef.current?.focus() }}
+          />
         ) : (
           days.map((day) => (
             <div
@@ -80,8 +104,9 @@ export default function RoutineDaysPage() {
                 {day.day_label}
               </Link>
               <button
-                onClick={() => deleteRoutineDay(day.id)}
-                className="text-sm text-red-400"
+                onClick={() => handleDeleteDay(day.id, day.day_label)}
+                disabled={deletingDayId === day.id}
+                className="text-sm text-red-400 disabled:opacity-50"
               >
                 Borrar
               </button>

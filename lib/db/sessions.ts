@@ -4,6 +4,7 @@ import { requestSync } from "@/lib/sync/syncEngine";
 import { parseLoad } from "@/lib/utils/parseLoad";
 import { todayLocalDate } from "@/lib/utils/dates";
 import { newId } from "@/lib/utils/ids";
+import { nextSetOrder } from "@/lib/utils/setOrder";
 
 /**
  * Finds today's training session for a given routine day (or the free
@@ -61,10 +62,16 @@ export function endTrainingSession(id: string): Promise<void> {
   return updateTrainingSession(id, { ended_at: new Date().toISOString() });
 }
 
+/**
+ * set_order is computed here, not passed in, and the read+write happens
+ * inside one Dexie transaction — same reasoning as
+ * getOrCreateTrainingSession: two "Registrar serie" taps in quick succession
+ * (or a fast loop like NlSetsDraft.handleConfirm) can't both read the same
+ * "existing sets" snapshot and collide on the same set_order.
+ */
 export async function createLoggedSet(input: {
   training_session_id: string;
   exercise_id: string;
-  set_order: number;
   load_raw: string;
   reps: number;
   rir: number | null;
@@ -73,19 +80,27 @@ export async function createLoggedSet(input: {
   if (!userId) return null;
 
   const id = newId();
-  await db.logged_sets.add({
-    id,
-    user_id: userId,
-    created_at: new Date().toISOString(),
-    training_session_id: input.training_session_id,
-    exercise_id: input.exercise_id,
-    set_order: input.set_order,
-    reps: input.reps,
-    rir: input.rir,
-    load_raw: input.load_raw.trim(),
-    load_normalized_kg: parseLoad(input.load_raw),
-    deleted_at: null,
-    synced: 0,
+  await db.transaction("rw", db.logged_sets, async () => {
+    const existing = await db.logged_sets
+      .where("training_session_id")
+      .equals(input.training_session_id)
+      .filter((s) => s.exercise_id === input.exercise_id && s.deleted_at === null)
+      .toArray();
+
+    await db.logged_sets.add({
+      id,
+      user_id: userId,
+      created_at: new Date().toISOString(),
+      training_session_id: input.training_session_id,
+      exercise_id: input.exercise_id,
+      set_order: nextSetOrder(existing),
+      reps: input.reps,
+      rir: input.rir,
+      load_raw: input.load_raw.trim(),
+      load_normalized_kg: parseLoad(input.load_raw),
+      deleted_at: null,
+      synced: 0,
+    });
   });
 
   requestSync();

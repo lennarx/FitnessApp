@@ -2,11 +2,17 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: "/",
     name: "Fitness Tracker",
     short_name: "Fitness",
     description: "Tracking de entrenamiento y alimentación, local-first.",
+    lang: "es-AR",
+    dir: "ltr",
     start_url: "/",
+    scope: "/",
     display: "standalone",
+    orientation: "portrait",
+    categories: ["health", "fitness"],
     background_color: "#0a0a0a",
     theme_color: "#0a0a0a",
     icons: [

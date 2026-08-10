@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { ExercisePickerModal } from "@/components/exercises/ExercisePickerModal";
 import { RoutineDayExerciseRow } from "@/components/plan/RoutineDayExerciseRow";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { db } from "@/lib/db";
 import {
   createRoutineDayExercise,
@@ -16,6 +17,7 @@ import {
 export default function RoutineDayPage() {
   const { dayId } = useParams<{ routineId: string; dayId: string }>();
   const [showPicker, setShowPicker] = useState(false);
+  const [addingExerciseId, setAddingExerciseId] = useState<string | null>(null);
 
   const day = useLiveQuery(() => db.routine_days.get(dayId), [dayId]);
 
@@ -31,16 +33,22 @@ export default function RoutineDayPage() {
   }, [dayId]);
 
   async function handleSelectExercise(exerciseId: string) {
-    const nextOrder =
-      dayExercises && dayExercises.length > 0
-        ? Math.max(...dayExercises.map(({ dayExercise }) => dayExercise.exercise_order)) + 1
-        : 0;
-    await createRoutineDayExercise({
-      routine_day_id: dayId,
-      exercise_id: exerciseId,
-      exercise_order: nextOrder,
-    });
-    setShowPicker(false);
+    if (addingExerciseId) return;
+    setAddingExerciseId(exerciseId);
+    try {
+      const nextOrder =
+        dayExercises && dayExercises.length > 0
+          ? Math.max(...dayExercises.map(({ dayExercise }) => dayExercise.exercise_order)) + 1
+          : 0;
+      await createRoutineDayExercise({
+        routine_day_id: dayId,
+        exercise_id: exerciseId,
+        exercise_order: nextOrder,
+      });
+      setShowPicker(false);
+    } finally {
+      setAddingExerciseId(null);
+    }
   }
 
   return (
@@ -59,7 +67,10 @@ export default function RoutineDayPage() {
         {dayExercises === undefined ? (
           <p className="text-neutral-500">Cargando...</p>
         ) : dayExercises.length === 0 ? (
-          <p className="text-neutral-500">Todavía no hay ejercicios en este día.</p>
+          <EmptyState
+            message="Todavía no hay ejercicios en este día."
+            cta={{ label: "Agregar ejercicio", onClick: () => setShowPicker(true) }}
+          />
         ) : (
           dayExercises.map(({ dayExercise, exercise }) => (
             <RoutineDayExerciseRow

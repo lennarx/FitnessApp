@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { getLocalUserId } from "@/lib/auth/session";
+import { shouldApplyMealParse } from "@/lib/parse/mealParseGuard";
 import { derivePortion } from "@/lib/parse/mealPortion";
 import type { ParsedMeal } from "@/lib/parse/validateParseResult";
 import { requestSync } from "@/lib/sync/syncEngine";
@@ -41,17 +42,35 @@ export async function createMeal(input: {
   return id;
 }
 
-/** Enrichment step: fills structured_text + portion from a successful parse. */
-export async function applyMealParse(id: string, parsed: ParsedMeal): Promise<void> {
+/**
+ * Enrichment step: fills structured_text + portion from a successful parse.
+ * expectedRawText is the text that was actually sent to the parse endpoint —
+ * re-read the row inside a transaction and only write if nothing changed
+ * out from under it (edited, deleted, or marked "no procesar") while the
+ * LLM call was in flight; otherwise discard the stale result silently.
+ */
+export async function applyMealParse(
+  id: string,
+  parsed: ParsedMeal,
+  expectedRawText: string
+): Promise<void> {
   const { portion_raw, portion_grams } = derivePortion(parsed.items);
-  await db.meals.update(id, {
-    structured_text: parsed.structured_text,
-    portion_raw,
-    portion_grams,
-    parse_status: "parsed",
-    synced: 0,
+
+  const applied = await db.transaction("rw", db.meals, async () => {
+    const meal = await db.meals.get(id);
+    if (!shouldApplyMealParse(meal, expectedRawText)) return false;
+
+    await db.meals.update(id, {
+      structured_text: parsed.structured_text,
+      portion_raw,
+      portion_grams,
+      parse_status: "parsed",
+      synced: 0,
+    });
+    return true;
   });
-  requestSync();
+
+  if (applied) requestSync();
 }
 
 /**

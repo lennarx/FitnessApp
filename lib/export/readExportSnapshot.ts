@@ -1,3 +1,4 @@
+import { getLocalUserId } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import type {
   LocalBodyWeight,
@@ -13,9 +14,9 @@ import type {
 } from "@/types/entities";
 
 /**
- * Flat, unfiltered read of every table the export needs. All soft-delete filtering
- * happens in buildWorkbookData, which is the part that's actually tested — this
- * stays a thin, untested I/O layer on purpose.
+ * Reads every table the export needs, scoped to the current user. All
+ * soft-delete filtering happens in buildWorkbookData, which is the part
+ * that's actually tested — this stays a thin, untested I/O layer on purpose.
  */
 export interface ExportSnapshot {
   routines: LocalRoutine[];
@@ -31,6 +32,23 @@ export interface ExportSnapshot {
 }
 
 export async function readExportSnapshot(): Promise<ExportSnapshot> {
+  const userId = await getLocalUserId();
+
+  if (!userId) {
+    return {
+      routines: [],
+      routine_days: [],
+      routine_day_exercises: [],
+      exercises: [],
+      training_sessions: [],
+      logged_sets: [],
+      cardio_sessions: [],
+      meals: [],
+      body_weight: [],
+      daily_metrics: [],
+    };
+  }
+
   const [
     routines,
     routine_days,
@@ -43,16 +61,16 @@ export async function readExportSnapshot(): Promise<ExportSnapshot> {
     body_weight,
     daily_metrics,
   ] = await Promise.all([
-    db.routines.toArray(),
-    db.routine_days.toArray(),
-    db.routine_day_exercises.toArray(),
-    db.exercises.toArray(),
-    db.training_sessions.toArray(),
-    db.logged_sets.toArray(),
-    db.cardio_sessions.toArray(),
-    db.meals.toArray(),
-    db.body_weight.toArray(),
-    db.daily_metrics.toArray(),
+    db.routines.where("user_id").equals(userId).toArray(),
+    db.routine_days.where("user_id").equals(userId).toArray(),
+    db.routine_day_exercises.where("user_id").equals(userId).toArray(),
+    db.exercises.where("user_id").equals(userId).toArray(),
+    db.training_sessions.where("user_id").equals(userId).toArray(),
+    db.logged_sets.where("user_id").equals(userId).toArray(),
+    db.cardio_sessions.where("user_id").equals(userId).toArray(),
+    db.meals.where("user_id").equals(userId).toArray(),
+    db.body_weight.where("user_id").equals(userId).toArray(),
+    db.daily_metrics.where("user_id").equals(userId).toArray(),
   ]);
 
   return {
